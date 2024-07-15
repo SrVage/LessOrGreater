@@ -2,23 +2,20 @@
 
 namespace Grains
 {
-    internal class GameGrain : Grain, IGameGrain
+    internal sealed class GameGrain : Grain, IGameGrain
     {
-        private readonly Queue<IPlayerGrain> _playerGrains = new Queue<IPlayerGrain>();
+        private readonly Queue<IPlayerGrain> _players = new Queue<IPlayerGrain>();
         public async Task AddPlayerToQueue(IPlayerGrain player)
         {
-            _playerGrains.Enqueue(player);
-            Console.WriteLine("Connect player to queue. Players in queue: " + _playerGrains.Count);
-            if (_playerGrains.Count > 1)
+            _players.Enqueue(player);
+            Console.WriteLine("Connect player to queue. Players in queue: " + _players.Count);
+            if (_players.Count > 1)
             {
-                var player1 = _playerGrains.Dequeue();
-                var player2 = _playerGrains.Dequeue();
+                var player1 = _players.Dequeue();
+                var player2 = _players.Dequeue();
                 IRoomGrain room = CreateRoom(out string roomId);
 
-                player1.SetRoom(room);
-                player2.SetRoom(room);
-
-                await Task.WhenAll(room.AddPlayer(player1), room.AddPlayer(player2));
+                await room.AddPlayer(player1, player2);
 
                 await room.StartGame();
             }

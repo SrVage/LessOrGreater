@@ -1,11 +1,11 @@
 ﻿using Grains.Interfaces;
 using Microsoft.Extensions.Hosting;
+using Common;
 
 namespace Client
 {
-    internal class Client : IPlayerObserver
+    internal sealed class Client : IPlayerObserver
     {
-        private const string EXIT_STRING = "exit";
         private IPlayerGrain _player;
         private IHost _host;
         public Client(IPlayerGrain player, IHost host)
@@ -17,10 +17,11 @@ namespace Client
         {
             while (true)
             {
-                Console.WriteLine("Enter numer or type exit");
+                Console.WriteLine("Enter number or type exit");
                 var input = Console.ReadLine();
-                if (EXIT_STRING.Equals(input))
+                if (Constants.EXIT_STRING.Equals(input))
                 {
+                    await _host.StopAsync();
                     break;
                 }
                 if (int.TryParse(input, out var number))
@@ -33,7 +34,7 @@ namespace Client
 
         public Task GetResult(bool win, int guessNumber)
         {
-            Console.WriteLine((win ? "Win! " : "Lose... ") + "Guess number was: " + guessNumber);
+            Console.WriteLine($"{(win ? "Win!" : "Lose...")} Guess number was: {guessNumber}");
             return EnterInRoom();
         }
     }

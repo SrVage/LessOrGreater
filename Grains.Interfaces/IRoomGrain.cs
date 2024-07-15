@@ -2,8 +2,8 @@
 {
     public interface IRoomGrain : IGrainWithStringKey
     {
-        Task AddPlayer(IPlayerGrain player);
         Task StartGame();
-        Task GuessNumber(int number, IPlayerGrain player);  
+        Task GuessNumber(int number, IPlayerGrain player);
+        Task AddPlayer(IPlayerGrain player1, IPlayerGrain player2);
     }
 }

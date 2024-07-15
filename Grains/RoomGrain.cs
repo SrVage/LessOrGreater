@@ -2,29 +2,22 @@
 
 namespace Grains
 {
-    internal class RoomGrain : Grain, IRoomGrain
+    internal sealed class RoomGrain : Grain, IRoomGrain
     {
         private const int MAX_GUESS_VALUE = 100;
-        private IPlayerGrain player1;
-        private IPlayerGrain player2;
+        private IPlayerGrain _player1;
+        private IPlayerGrain _player2;
         private int _guessNumber;
         private int? _firstPlayerNumber;
         private int? _secondPlayerNumber;
         private readonly Random _random = new Random();
 
-
-        public Task AddPlayer(IPlayerGrain player)
+        public Task AddPlayer(IPlayerGrain player1, IPlayerGrain player2)
         {
-            if (player1 == null)
-            {
-                player1 = player;
-                Console.WriteLine("Player 1 was added");
-            }
-            else
-            {
-                player2 = player;
-                Console.WriteLine("Player 2 was added");
-            }
+            _player1 = player1;
+            _player2 = player2;
+            _player1.SetRoom(this);
+            _player2.SetRoom(this);
             return Task.CompletedTask;
         }
 
@@ -40,17 +33,15 @@ namespace Grains
 
         public Task GuessNumber(int number, IPlayerGrain player)
         {
-            Console.WriteLine("Guess number");
-            if (player.GetGrainId() == player1.GetGrainId() && !_firstPlayerNumber.HasValue) 
+            if (player.GetGrainId() == _player1.GetGrainId() && !_firstPlayerNumber.HasValue) 
             {
                 _firstPlayerNumber = number;
                 Console.WriteLine("First player number is: " + _firstPlayerNumber);
             }
-            else if (player.GetGrainId() == player2.GetGrainId() && !_secondPlayerNumber.HasValue)
+            else if (player.GetGrainId() == _player2.GetGrainId() && !_secondPlayerNumber.HasValue)
             {
                 _secondPlayerNumber = number;
                 Console.WriteLine("Second player number is: " + _secondPlayerNumber);
-
             }
             if (_firstPlayerNumber.HasValue && _secondPlayerNumber.HasValue) 
             {
@@ -76,8 +67,8 @@ namespace Grains
             {
                 Console.WriteLine("Nobody win");
             }
-            player1.ReceiveResults(_guessNumber, firstPlayerDifference < secondPlayerDifference);
-            player2.ReceiveResults(_guessNumber, secondPlayerDifference < firstPlayerDifference);
+            _player1.ReceiveResults(_guessNumber, firstPlayerDifference < secondPlayerDifference);
+            _player2.ReceiveResults(_guessNumber, secondPlayerDifference < firstPlayerDifference);
             await Task.Delay(2000);
             await StartGame();
         }
