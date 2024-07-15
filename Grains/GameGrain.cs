@@ -8,17 +8,17 @@ namespace Grains
         public async Task AddPlayerToQueue(IPlayerGrain player)
         {
             _playerGrains.Enqueue(player);
+            Console.WriteLine("Connect player to queue. Players in queue: " + _playerGrains.Count);
             if (_playerGrains.Count > 1)
             {
                 var player1 = _playerGrains.Dequeue();
                 var player2 = _playerGrains.Dequeue();
                 IRoomGrain room = CreateRoom(out string roomId);
 
-                await player1.SetRoomId(roomId);
-                await player2.SetRoomId(roomId);
+                player1.SetRoom(room);
+                player2.SetRoom(room);
 
-                await room.AddPlayer(player1);
-                await room.AddPlayer(player2);
+                await Task.WhenAll(room.AddPlayer(player1), room.AddPlayer(player2));
 
                 await room.StartGame();
             }

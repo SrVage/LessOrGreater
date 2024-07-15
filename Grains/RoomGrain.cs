@@ -10,33 +10,29 @@ namespace Grains
 {
     internal class RoomGrain : Grain, IRoomGrain
     {
-        private readonly ILogger _logger;
         private IPlayerGrain player1;
         private IPlayerGrain player2;
 
-        public RoomGrain(ILogger logger)
-        {
-            _logger = logger;
-        }
 
         public Task AddPlayer(IPlayerGrain player)
         {
             if (player1 == null)
             {
                 player1 = player;
-                _logger.LogInformation("Player 1 was added");
+                Console.WriteLine("Player 1 was added");
             }
             else
             {
                 player2 = player;
-                _logger.LogInformation("Player 2 was added");
+                Console.WriteLine("Player 2 was added");
             }
             return Task.CompletedTask;
         }
 
         public Task StartGame()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Start new game");
+            return Task.CompletedTask;
         }
     }
 }
