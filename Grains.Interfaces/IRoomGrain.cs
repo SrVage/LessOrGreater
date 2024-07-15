@@ -4,5 +4,6 @@
     {
         Task AddPlayer(IPlayerGrain player);
         Task StartGame();
+        Task GuessNumber(int number, IPlayerGrain player);  
     }
 }

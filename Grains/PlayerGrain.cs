@@ -1,5 +1,4 @@
 ﻿using Grains.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace Grains
 {
@@ -14,9 +13,15 @@ namespace Grains
             await gameGrain.AddPlayerToQueue(this);
         }
 
-        public Task SendNumber(int number)
+        public Task<bool> InRoom()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(_roomGrain != null);
+        }
+
+        public async Task SendNumber(int number)
+        {
+            Console.WriteLine("Send number: " + number);
+            await _roomGrain.GuessNumber(number, this);
         }
 
         public void SetRoom(IRoomGrain roomGrain)
