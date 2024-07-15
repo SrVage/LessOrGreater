@@ -59,7 +59,7 @@ namespace Grains
             return Task.CompletedTask;
         }
 
-        private void CheckResults()
+        private async void CheckResults()
         {
             Console.WriteLine("Check results");
             var firstPlayerDifference = Math.Abs(_guessNumber - _firstPlayerNumber.Value);
@@ -76,6 +76,10 @@ namespace Grains
             {
                 Console.WriteLine("Nobody win");
             }
+            player1.ReceiveResults(_guessNumber, firstPlayerDifference < secondPlayerDifference);
+            player2.ReceiveResults(_guessNumber, secondPlayerDifference < firstPlayerDifference);
+            await Task.Delay(2000);
+            await StartGame();
         }
     }
 }
